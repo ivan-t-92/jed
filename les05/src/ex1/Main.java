@@ -1,6 +1,5 @@
 package ex1;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 public class Main {
@@ -50,20 +49,7 @@ public class Main {
     }
 
     static void printSorted(PetCollection c) {
-        Iterator<PetData> itr = c.sortedIterator(new Comparator<>() {
-            @Override
-            public int compare(PetData o1, PetData o2) {
-                int comp = o1.owner.name.compareTo(o2.owner.name);
-                if (comp != 0) {
-                    return comp;
-                }
-                comp = o1.name.compareTo(o2.name);
-                if (comp != 0) {
-                    return comp;
-                }
-                return o2.weight - o1.weight;
-            }
-        });
+        Iterator<PetData> itr = c.sortedIterator();
         while (itr.hasNext()) {
             System.out.println(itr.next());
         }
