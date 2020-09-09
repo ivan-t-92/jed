@@ -1,7 +1,5 @@
 package ex1;
 
-import java.util.Iterator;
-
 public class Main {
     public static void main(String[] args) {
         PetCollection c = new PetCollection();
@@ -27,10 +25,7 @@ public class Main {
 
         String name = "Jack";
         System.out.println("-- Search for pets named " + name + " --");
-        Iterator<PetData> itr = c.searchByName(name);
-        while (itr.hasNext()) {
-            System.out.println(itr.next());
-        }
+        c.searchByName(name).stream().forEach(System.out::println);
         System.out.println();
 
         PetData newData = new PetData(5, "Lucy", john, 10);
@@ -49,9 +44,6 @@ public class Main {
     }
 
     static void printSorted(PetCollection c) {
-        Iterator<PetData> itr = c.sortedIterator();
-        while (itr.hasNext()) {
-            System.out.println(itr.next());
-        }
+        c.sortedStream().forEachOrdered(System.out::println);
     }
 }

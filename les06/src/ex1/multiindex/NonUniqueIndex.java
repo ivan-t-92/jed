@@ -1,6 +1,7 @@
 package ex1.multiindex;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 class NonUniqueIndex<K, E> extends Index<K, E> {
     private final Map<K, HashSet<E>> multimap;
@@ -29,37 +30,8 @@ class NonUniqueIndex<K, E> extends Index<K, E> {
     }
 
     @Override
-    public Iterator<E> iterator() {
-        return new Iterator<>() {
-            final Iterator<HashSet<E>> itr = multimap.values().iterator();
-            Iterator<E> currentSetItr = nextCurrentSetItr();
-
-            @Override
-            public boolean hasNext() {
-                return currentSetItr != null && currentSetItr.hasNext();
-            }
-
-            @Override
-            public E next() {
-                if (currentSetItr == null) {
-                    throw new NoSuchElementException();
-                }
-                E next = currentSetItr.next();
-                if (!currentSetItr.hasNext()) {
-                    currentSetItr = nextCurrentSetItr();
-                }
-                return next;
-            }
-
-            private Iterator<E> nextCurrentSetItr() {
-                return itr.hasNext() ? itr.next().iterator() : null;
-            }
-        };
-    }
-
-    @Override
-    public Iterator<E> find(K key) {
-        return multimap.get(key).iterator();
+    public List<E> find(K key) {
+        return new ArrayList<>(multimap.get(key));
     }
 
     @Override
@@ -70,5 +42,10 @@ class NonUniqueIndex<K, E> extends Index<K, E> {
     @Override
     boolean isUnique() {
         return false;
+    }
+
+    @Override
+    public Stream<E> stream() {
+        return multimap.values().stream().flatMap(Collection::stream);
     }
 }

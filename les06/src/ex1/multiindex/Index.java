@@ -1,6 +1,7 @@
 package ex1.multiindex;
 
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class Index<K, E> {
     abstract void add(E o);
@@ -8,6 +9,6 @@ public abstract class Index<K, E> {
     abstract boolean contains(E o);
     abstract boolean isUnique();
 
-    public abstract Iterator<E> iterator();
-    public abstract Iterator<E> find(K key);
+    public abstract Stream<E> stream();
+    public abstract List<E> find(K key);
 }

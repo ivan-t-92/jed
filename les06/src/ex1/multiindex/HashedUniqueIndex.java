@@ -1,8 +1,7 @@
 package ex1.multiindex;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Stream;
 
 public final class HashedUniqueIndex<K, E> extends Index<K, E> {
     private final HashMap<K, E> hashMap = new HashMap<>();
@@ -23,31 +22,13 @@ public final class HashedUniqueIndex<K, E> extends Index<K, E> {
     }
 
     @Override
-    public Iterator<E> iterator() {
-        return hashMap.values().iterator();
-    }
-
-    @Override
-    public Iterator<E> find(K key) {
-        return new Iterator<>() {
-            E next = hashMap.get(key);
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public E next() {
-                if (hasNext()) {
-                    E result = next;
-                    next = null;
-                    return result;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-        };
+    public List<E> find(K key) {
+        List<E> result = new ArrayList<>();
+        E v = hashMap.get(key);
+        if (v != null) {
+            result.add(v);
+        }
+        return result;
     }
 
     @Override
@@ -58,5 +39,10 @@ public final class HashedUniqueIndex<K, E> extends Index<K, E> {
     @Override
     boolean isUnique() {
         return true;
+    }
+
+    @Override
+    public Stream<E> stream() {
+        return hashMap.values().stream();
     }
 }

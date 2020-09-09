@@ -1,7 +1,8 @@
 package ex1;
 
 import ex1.multiindex.*;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class PetCollection {
 
@@ -33,19 +34,19 @@ public class PetCollection {
         }
     }
 
-    public Iterator<PetData> searchByName(String name) {
+    public List<PetData> searchByName(String name) {
         return nameIndex.find(name);
     }
 
     public void replaceById(PetData newData) {
-        Iterator<PetData> itr = idIndex.find(newData.id);
-        if (itr.hasNext()) {
-            multiIndexCollection.remove(itr.next());
+        List<PetData> l = idIndex.find(newData.id);
+        if (!l.isEmpty()) {
+            multiIndexCollection.remove(l.get(0));
         }
         multiIndexCollection.add(newData);
     }
 
-    public Iterator<PetData> sortedIterator() {
-        return sortedIndex.iterator();
+    public Stream<PetData> sortedStream() {
+        return sortedIndex.stream();
     }
 }
