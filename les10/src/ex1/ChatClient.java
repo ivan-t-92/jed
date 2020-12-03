@@ -7,12 +7,12 @@ import java.util.Scanner;
 public class ChatClient {
     private final Socket socket;
     private final ObjectInputStream objectInputStream;
-    private final ObjectOutputStream objectOutputStream;
+    private final DataOutputStream objectOutputStream;
 
     public ChatClient(String name) throws IOException {
         socket = new Socket("localhost", 4999);
         objectInputStream = new ObjectInputStream(socket.getInputStream());
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream = new DataOutputStream(socket.getOutputStream());
         objectOutputStream.writeUTF(name);
         objectOutputStream.flush();
     }
@@ -38,23 +38,7 @@ public class ChatClient {
                 if (message.isEmpty()) {
                     continue;
                 }
-                if (message.equals("quit")) {
-                    System.out.println("Closing...");
-                    objectInputStream.close();
-                    break;
-                }
-                String recipient = null;
-                if (message.charAt(0) == '@') {
-                    int spaceIndex = message.indexOf(' ');
-                    if (spaceIndex >= 0) {
-                        recipient = message.substring(1, spaceIndex);
-                        message = message.substring(spaceIndex);
-                        message = message.stripLeading();
-                    }
-                }
-                if (!message.isEmpty()) {
-                    objectOutputStream.writeObject(new MessageData(message, null, recipient));
-                }
+                objectOutputStream.writeUTF(message);
             }
         } catch (IOException e) {
             System.out.println("Error receiving messages");
