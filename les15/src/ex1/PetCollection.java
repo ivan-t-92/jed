@@ -26,11 +26,11 @@ public class PetCollection {
                 return (Integer)o2[2] - (Integer)o1[2];
             });
 
-    private final MultiIndexCollection<PetData> multiIndexCollection = new MultiIndexCollection<>(
-            idIndex,
-            nameIndex,
-            sortedIndex
-    );
+    private final MultiIndexCollection<PetData> multiIndexCollection = new MultiIndexCollection.Builder<PetData>()
+            .withIndex(idIndex)
+            .withIndex(nameIndex)
+            .withIndex(sortedIndex)
+            .build();
 
     public void add(PetData newData) throws AlreadyExistsException {
         if (!multiIndexCollection.add(newData)) {

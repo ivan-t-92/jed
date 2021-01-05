@@ -4,17 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MultiIndexCollection<E> {
-    private final ArrayList<Index<?, E>> uniqueIndices = new ArrayList<>();
-    private final ArrayList<Index<?, E>> nonUniqueIndices = new ArrayList<>();
+    private final ArrayList<Index<?, E>> uniqueIndices;
+    private final ArrayList<Index<?, E>> nonUniqueIndices;
 
-    public MultiIndexCollection(Index<?, E>... indices) {
-        Arrays.stream(indices).forEach(index -> {
-            if (index.isUnique()) {
-                uniqueIndices.add(index);
-            } else {
-                nonUniqueIndices.add(index);
-            }
-        });
+    MultiIndexCollection(Builder<E> builder) {
+        this.uniqueIndices = builder.uniqueIndices;
+        this.nonUniqueIndices = builder.nonUniqueIndices;
     }
 
     public boolean add(E o) {
@@ -29,5 +24,23 @@ public class MultiIndexCollection<E> {
     public void remove(E o) {
         uniqueIndices.stream().forEach(index -> index.remove(o));
         nonUniqueIndices.stream().forEach(index -> index.remove(o));
+    }
+
+    public static final class Builder<E> {
+        private final ArrayList<Index<?, E>> uniqueIndices = new ArrayList<>();
+        private final ArrayList<Index<?, E>> nonUniqueIndices = new ArrayList<>();
+
+        public Builder<E> withIndex(Index<?, E> index) {
+            if (index.isUnique()) {
+                uniqueIndices.add(index);
+            } else {
+                nonUniqueIndices.add(index);
+            }
+            return this;
+        }
+
+        public MultiIndexCollection<E> build() {
+            return new MultiIndexCollection<E>(this);
+        }
     }
 }
