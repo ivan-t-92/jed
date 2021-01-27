@@ -39,8 +39,8 @@ public final class HashedUniqueIndex<K, E> extends Index<K, E> {
     }
 
     @Override
-    boolean isUnique() {
-        return true;
+    void accept(IndexVisitor<E> visitor) {
+        visitor.visitUnique(this);
     }
 
     @Override

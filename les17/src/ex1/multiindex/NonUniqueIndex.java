@@ -40,8 +40,8 @@ class NonUniqueIndex<K, E> extends Index<K, E> {
     }
 
     @Override
-    boolean isUnique() {
-        return false;
+    void accept(IndexVisitor<E> visitor) {
+        visitor.visitNonUnique(this);
     }
 
     @Override
