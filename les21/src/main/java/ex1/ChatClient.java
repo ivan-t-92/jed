@@ -1,17 +1,20 @@
 package ex1;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class ChatClient {
     private final Socket socket;
-    private final ObjectInputStream objectInputStream;
+    private final DataInputStream objectInputStream;
     private final DataOutputStream objectOutputStream;
 
     public ChatClient(String name) throws IOException {
         socket = new Socket("localhost", 4999);
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
+        objectInputStream = new DataInputStream(socket.getInputStream());
         objectOutputStream = new DataOutputStream(socket.getOutputStream());
         objectOutputStream.writeUTF(name);
         objectOutputStream.flush();
@@ -19,12 +22,13 @@ public class ChatClient {
 
     public void runClient() {
         new Thread(() -> {
+            Gson gson = new Gson();
             try {
                 while (true) {
-                    MessageData messageData = (MessageData) objectInputStream.readObject();
+                    MessageData messageData = gson.fromJson(objectInputStream.readUTF(), MessageData.class);
                     System.out.println("[" + messageData.sender + "]: " + messageData.message);
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | JsonSyntaxException e) {
                 System.out.println("Error receiving messages");
                 e.printStackTrace();
             }

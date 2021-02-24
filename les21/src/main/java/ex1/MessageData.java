@@ -1,8 +1,6 @@
 package ex1;
 
-import java.io.Serializable;
-
-public class MessageData implements Serializable {
+public class MessageData {
     public String message;
     public String sender;
     public String recipient;

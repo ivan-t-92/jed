@@ -1,21 +1,21 @@
 package ex1;
 
+import com.google.gson.Gson;
+
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class Client implements Runnable {
-
+    final Gson gson = new Gson();
     final Socket socket;
     final DataInputStream objectInputStream;
-    final ObjectOutputStream objectOutputStream;
+    final DataOutputStream objectOutputStream;
     final String name;
 
-    private Client(Socket socket, DataInputStream objectInputStream, ObjectOutputStream objectOutputStream, String name) {
+    private Client(Socket socket, DataInputStream objectInputStream, DataOutputStream objectOutputStream, String name) {
 
         this.socket = socket;
         this.objectInputStream = objectInputStream;
@@ -24,7 +24,7 @@ public class Client implements Runnable {
     }
 
     public static Client fromSocket(Socket socket) throws IOException {
-        var objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        var objectOutputStream = new DataOutputStream(socket.getOutputStream());
         var objectInputStream = new DataInputStream(socket.getInputStream());
         String name = objectInputStream.readUTF();
         return new Client(
@@ -109,7 +109,7 @@ public class Client implements Runnable {
 
     private void sendMessageToClient(MessageData messageData) {
         try {
-            objectOutputStream.writeObject(messageData);
+            objectOutputStream.writeUTF(gson.toJson(messageData));
         } catch (IOException e) {
             System.out.println("Error sending message to client");
             e.printStackTrace();
