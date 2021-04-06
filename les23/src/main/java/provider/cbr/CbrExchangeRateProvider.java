@@ -2,7 +2,7 @@ package provider.cbr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import servlet.CurrencyExchangeRateProvider;
+import provider.CurrencyExchangeRateProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
