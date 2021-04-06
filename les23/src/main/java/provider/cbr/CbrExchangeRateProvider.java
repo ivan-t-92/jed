@@ -10,8 +10,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,7 +26,8 @@ public class CbrExchangeRateProvider implements CurrencyExchangeRateProvider {
             .appendValue(YEAR, 4)
             .toFormatter();
     private static final String RUB_CODE = "RUB";
-    private final Map<LocalDate, ValCurs> cache = new HashMap<>();
+    private static final int CACHE_SIZE = 1024;
+    private final Cache<LocalDate, ValCurs> cache = new Cache<>(CACHE_SIZE);
 
     @Override
     public Optional<Double> getExchangeRate(String currencyFrom, String currencyTo, LocalDate date) {
@@ -73,8 +72,9 @@ public class CbrExchangeRateProvider implements CurrencyExchangeRateProvider {
     }
 
     private Optional<ValCurs> load(LocalDate date) {
-        if (cache.containsKey(date)) {
-            return Optional.of(cache.get(date));
+        Optional<ValCurs> curs;
+        if ((curs = cache.get(date)).isPresent()) {
+            return curs;
         }
         String url = BASE_URL + date.format(FORMATTER);
         try (InputStream is = new URL(url).openStream()) {
