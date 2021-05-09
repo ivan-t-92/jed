@@ -5,33 +5,6 @@ import java.util.stream.Stream;
 public class PetCollection {
 
     private static final String DB_URL = "jdbc:h2:mem:";
-    private static final String CREATE_PERSON_TABLE_SQL = """
-            CREATE TABLE personTable(
-                id INT NOT NULL PRIMARY KEY,
-                age INT NOT NULL,
-                sex INT NOT NULL,
-                name VARCHAR(255) NOT NULL
-            );""";
-    private static final String CREATE_PET_TABLE_SQL = """
-            CREATE TABLE petTable(
-                id INT NOT NULL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                ownerId INT NOT NULL,
-                weight INT NOT NULL,
-                FOREIGN KEY(ownerId) REFERENCES personTable
-            );""";
-    private static final String INSERT_PERSON_SQL = "INSERT INTO personTable VALUES(?, ?, ?, ?);";
-    private static final String INSERT_PET_SQL = "INSERT INTO petTable VALUES(?, ?, ?, ?);";
-    private static final String DELETE_PET_SQL = "DELETE FROM petTable WHERE id = ?;";
-    private static final String SEARCH_PET_BY_ID_SQL = "SELECT * FROM petTable WHERE id = ?;";
-    private static final String SEARCH_PERSON_BY_ID_SQL = "SELECT * FROM personTable WHERE id = ?;";
-    private static final String SEARCH_PET_BY_NAME_SQL = "SELECT * FROM petTable WHERE name = ?;";
-    private static final String SORTED_PETS_SQL = """
-            SELECT * FROM petTable
-            JOIN personTable ON petTable.ownerId = personTable.id
-            ORDER BY personTable.name, petTable.name, petTable.weight;
-            """;
-
     private final Connection connection;
 
     public PetCollection() {
@@ -42,8 +15,8 @@ public class PetCollection {
             throw new RuntimeException("can't initialize database");
         }
         try (Statement statement = connection.createStatement()) {
-            statement.execute(CREATE_PERSON_TABLE_SQL);
-            statement.execute(CREATE_PET_TABLE_SQL);
+            statement.execute(SQLConstants.CREATE_PERSON_TABLE);
+            statement.execute(SQLConstants.CREATE_PET_TABLE);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,7 +30,7 @@ public class PetCollection {
     }
 
     private void addUnchecked(Person person) {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PERSON_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PERSON)) {
             statement.setInt(1, person.id);
             statement.setInt(2, person.age);
             statement.setInt(3, person.sex.ordinal());
@@ -76,7 +49,7 @@ public class PetCollection {
     }
 
     private void addUnchecked(PetData newData) {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PET_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PET)) {
             statement.setInt(1, newData.id);
             statement.setString(2, newData.name);
             statement.setInt(3, newData.ownerId);
@@ -88,7 +61,7 @@ public class PetCollection {
     }
 
     public Optional<Person> getPerson(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(SEARCH_PERSON_BY_ID_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PERSON_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -104,7 +77,7 @@ public class PetCollection {
     }
 
     public Optional<PetData> getPet(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(SEARCH_PET_BY_ID_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -120,7 +93,7 @@ public class PetCollection {
     }
 
     public List<PetData> searchByName(String name) {
-        try (PreparedStatement statement = connection.prepareStatement(SEARCH_PET_BY_NAME_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_NAME)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
 
@@ -140,7 +113,7 @@ public class PetCollection {
     }
 
     private void delete(PetData petData) {
-        try (PreparedStatement statement = connection.prepareStatement(DELETE_PET_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.DELETE_PET)) {
             statement.setInt(1, petData.id);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -156,7 +129,7 @@ public class PetCollection {
     }
 
     public Stream<PetData> sortedStream() {
-        try (PreparedStatement statement = connection.prepareStatement(SORTED_PETS_SQL)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SORTED_PETS)) {
             ResultSet resultSet = statement.executeQuery();
 
             List<PetData> resultList = new ArrayList<>();
