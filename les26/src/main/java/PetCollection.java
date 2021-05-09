@@ -33,7 +33,7 @@ public class PetCollection {
         try (PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PERSON)) {
             statement.setInt(1, person.id);
             statement.setInt(2, person.age);
-            statement.setInt(3, person.sex.ordinal());
+            statement.setString(3, person.sex.toString());
             statement.setString(4, person.name);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -67,7 +67,7 @@ public class PetCollection {
             if (resultSet.next()) {
                 return Optional.of(new Person(id,
                         resultSet.getInt(2),
-                        Person.Sex.values()[resultSet.getInt(3)],
+                        Person.Sex.valueOf(resultSet.getString(3)),
                         resultSet.getString(4)));
             }
         } catch (SQLException e) {

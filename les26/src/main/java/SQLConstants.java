@@ -3,7 +3,7 @@ public final class SQLConstants {
             "CREATE TABLE personTable(" +
                     "id INT NOT NULL PRIMARY KEY," +
                     "age INT NOT NULL," +
-                    "sex INT NOT NULL," +
+                    "sex VARCHAR(6) NOT NULL," +
                     "name VARCHAR(255) NOT NULL);";
     static final String CREATE_PET_TABLE =
             "CREATE TABLE petTable(" +
