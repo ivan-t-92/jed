@@ -4,24 +4,6 @@ import java.util.stream.Stream;
 
 public class PetCollection {
 
-    private static final String DB_URL = "jdbc:h2:mem:";
-    private final Connection connection;
-
-    public PetCollection() {
-        try {
-            connection = DriverManager.getConnection(DB_URL);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("can't initialize database");
-        }
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(SQLConstants.CREATE_PERSON_TABLE);
-            statement.execute(SQLConstants.CREATE_PET_TABLE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void add(Person person) throws AlreadyExistsException {
         if (getPerson(person.id).isPresent()) {
             throw new AlreadyExistsException("id " + person.id + " already exists");
@@ -30,7 +12,8 @@ public class PetCollection {
     }
 
     private void addUnchecked(Person person) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PERSON)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PERSON)) {
             statement.setInt(1, person.id);
             statement.setInt(2, person.age);
             statement.setString(3, person.sex.toString());
@@ -49,7 +32,8 @@ public class PetCollection {
     }
 
     private void addUnchecked(PetData newData) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PET)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.INSERT_PET)) {
             statement.setInt(1, newData.id);
             statement.setString(2, newData.name);
             statement.setInt(3, newData.ownerId);
@@ -61,7 +45,8 @@ public class PetCollection {
     }
 
     public Optional<Person> getPerson(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PERSON_BY_ID)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PERSON_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -77,7 +62,8 @@ public class PetCollection {
     }
 
     public Optional<PetData> getPet(int id) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_ID)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -93,7 +79,8 @@ public class PetCollection {
     }
 
     public List<PetData> searchByName(String name) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_NAME)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.SEARCH_PET_BY_NAME)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
 
@@ -113,7 +100,8 @@ public class PetCollection {
     }
 
     private void delete(PetData petData) {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.DELETE_PET)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.DELETE_PET)) {
             statement.setInt(1, petData.id);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -129,7 +117,8 @@ public class PetCollection {
     }
 
     public Stream<PetData> sortedStream() {
-        try (PreparedStatement statement = connection.prepareStatement(SQLConstants.SORTED_PETS)) {
+        try (Connection connection = DriverManager.getConnection(SQLConstants.DB_URL);
+             PreparedStatement statement = connection.prepareStatement(SQLConstants.SORTED_PETS)) {
             ResultSet resultSet = statement.executeQuery();
 
             List<PetData> resultList = new ArrayList<>();

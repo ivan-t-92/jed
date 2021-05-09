@@ -1,6 +1,21 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Main {
+    private static Connection connection;
+
     public static void main(String[] args) {
+        initDatabase();
+        try {
+            testPetCollection();
+        } finally {
+            closeDatabase();
+        }
+    }
+
+    private static void testPetCollection() {
         PetCollection c = new PetCollection();
 
         int ericId, sarahId, johnId;
@@ -48,5 +63,29 @@ public class Main {
 
     static void printSorted(PetCollection c) {
         c.sortedStream().forEachOrdered(System.out::println);
+    }
+
+    static void initDatabase() {
+        try {
+            connection = DriverManager.getConnection(SQLConstants.DB_URL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("can't initialize database");
+        }
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(SQLConstants.CREATE_PERSON_TABLE);
+            statement.execute(SQLConstants.CREATE_PET_TABLE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("can't create tables in database");
+        }
+    }
+
+    static void closeDatabase() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

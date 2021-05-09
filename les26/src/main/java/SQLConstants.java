@@ -22,6 +22,7 @@ public final class SQLConstants {
             "SELECT * FROM petTable " +
                     "JOIN personTable ON petTable.ownerId = personTable.id " +
                     "ORDER BY personTable.name, petTable.name, petTable.weight;";
+    static final String DB_URL = "jdbc:h2:mem:petcollection";
 
     private SQLConstants() {}
 }
