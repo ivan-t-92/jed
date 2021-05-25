@@ -3,8 +3,17 @@ package provider.cbr;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 @Data
+@Entity
 class Valute {
+    @Id
+    @GeneratedValue
+    private int persistenceId;
+
     @JacksonXmlProperty(isAttribute = true, localName = "ID")
     private String id;
 
