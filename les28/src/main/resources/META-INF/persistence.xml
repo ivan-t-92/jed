@@ -7,7 +7,7 @@
 
     <persistence-unit name="ValCursTable" transaction-type="RESOURCE_LOCAL">
 
-        <class>provider.cbr.ValCursEntity</class>
+        <class>servlet.exchange.dataaccess.persistence.ValCursEntity</class>
 
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test"/>

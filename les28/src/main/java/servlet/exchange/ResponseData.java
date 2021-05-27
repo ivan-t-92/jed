@@ -1,4 +1,4 @@
-package servlet;
+package servlet.exchange;
 
 import lombok.Data;
 

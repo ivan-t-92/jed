@@ -1,4 +1,6 @@
-package provider.cbr;
+package servlet.exchange.dataaccess.persistence;
+
+import servlet.exchange.dto.ValCurs;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;

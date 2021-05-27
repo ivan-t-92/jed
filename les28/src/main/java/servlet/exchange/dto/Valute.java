@@ -1,4 +1,4 @@
-package provider.cbr;
+package servlet.exchange.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Data;
@@ -9,7 +9,7 @@ import javax.persistence.Id;
 
 @Data
 @Entity
-class Valute {
+public class Valute {
     @Id
     @GeneratedValue
     private int persistenceId;

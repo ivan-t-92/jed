@@ -1,7 +1,6 @@
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
-import provider.cbr.CbrExchangeRateProvider;
 import servlet.CurrencyExchangeRateServlet;
 
 import java.io.File;
@@ -14,7 +13,7 @@ public class Main {
         Context context = tomcat.addContext("", new File(".").getAbsolutePath());
 
         String servletName = "ExchangeRatesServlet";
-        Tomcat.addServlet(context, servletName, new CurrencyExchangeRateServlet(new CbrExchangeRateProvider()));
+        Tomcat.addServlet(context, servletName, new CurrencyExchangeRateServlet());
         context.addServletMappingDecoded("/exchange-rates/api", servletName);
 
         tomcat.start();
