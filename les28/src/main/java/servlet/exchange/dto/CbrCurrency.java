@@ -8,12 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Data
-@Entity
-public class Valute {
-    @Id
-    @GeneratedValue
-    private int persistenceId;
-
+public class CbrCurrency {
     @JacksonXmlProperty(isAttribute = true, localName = "ID")
     private String id;
 
@@ -27,8 +22,4 @@ public class Valute {
     private String name;
     @JacksonXmlProperty(localName = "Value")
     private String value;
-
-    public double getValueAsDouble() {
-        return Double.parseDouble(value.replace(',', '.'));
-    }
 }

@@ -1,6 +1,6 @@
 package servlet.exchange.dataaccess.persistence;
 
-import servlet.exchange.dto.ValCurs;
+import servlet.exchange.entity.CurrenciesByDateEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -9,25 +9,24 @@ import javax.persistence.Persistence;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ValCursPersistence {
+public class CurrenciesByDatePersistence {
 
     private final EntityManagerFactory entityManagerFactory =
-            Persistence.createEntityManagerFactory("ValCursTable");
+            Persistence.createEntityManagerFactory("ExchangeRateTable");
 
-    public Optional<ValCurs> get(LocalDate date) {
+    public Optional<CurrenciesByDateEntity> get(LocalDate date) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Optional<ValCurs> result =
-                Optional.ofNullable(entityManager.find(ValCursEntity.class, date))
-                        .map(e -> e.valCurs);
+        Optional<CurrenciesByDateEntity> result =
+                Optional.ofNullable(entityManager.find(CurrenciesByDateEntity.class, date));
         entityManager.close();
         return result;
     }
 
-    public void save(LocalDate date, ValCurs valCurs) {
+    public void save(CurrenciesByDateEntity entity) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.persist(new ValCursEntity(date, valCurs));
+        entityManager.persist(entity);
         transaction.commit();
         entityManager.close();
     }
