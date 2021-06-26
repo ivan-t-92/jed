@@ -15,11 +15,11 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class CurrencyEntity {
     @Id @GeneratedValue
-    int id;
+    private int id;
 
     @NonNull
-    String charCode;
+    private String charCode;
 
     @NonNull
-    Double rateToRub;
+    private Double rateToRub;
 }

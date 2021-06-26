@@ -15,9 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 public class CurrenciesByDateEntity {
     @Id @NonNull
-    LocalDate localDate;
+    private LocalDate localDate;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @NonNull
-    List<CurrencyEntity> currencies;
+    private List<CurrencyEntity> currencies;
 }
