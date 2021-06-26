@@ -1,6 +1,7 @@
 package servlet.exchange;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import servlet.exchange.dataaccess.persistence.CurrenciesByDatePersistence;
 import servlet.exchange.dataaccess.provider.CbrExchangeRateProvider;
@@ -28,6 +29,12 @@ class CurrencyExchangeServiceTest {
     private static LocalDate localDate;
     private static CurrenciesByDateEntity currenciesByDate;
 
+    private static CbrExchangeRateProvider providerMockWithData;
+    private static CbrExchangeRateProvider providerMockWithoutData;
+    private static CurrenciesByDatePersistence persistenceMockWithData;
+    private static CurrenciesByDatePersistence persistenceMockWithoutData;
+    private static CurrenciesByDateMapper mapperMock;
+
     @BeforeAll
     static void init() {
         localDate = LocalDate.now();
@@ -35,52 +42,55 @@ class CurrencyExchangeServiceTest {
         currencies.add(new CurrencyEntity(USD_CODE, USD_RATE));
         currencies.add(new CurrencyEntity(EUR_CODE, EUR_RATE));
         currenciesByDate = new CurrenciesByDateEntity(localDate, currencies);
+
+        providerMockWithData = createProviderMockWithData();
+        providerMockWithoutData = createProviderMockWithoutData();
+        persistenceMockWithData = createPersistenceMockWithData();
+        persistenceMockWithoutData = createPersistenceMockWithoutData();
+        mapperMock = createMapperMock();
+    }
+
+    @BeforeEach
+    void resetInvocationCounters() {
+        clearInvocations(providerMockWithData);
+        clearInvocations(providerMockWithoutData);
+        clearInvocations(persistenceMockWithData);
+        clearInvocations(persistenceMockWithoutData);
+        clearInvocations(mapperMock);
     }
 
     @Test
     void jsonResponseHasDataInDb() {
-        CbrExchangeRateProvider providerMock = createProviderMockWithData();
-        CurrenciesByDatePersistence persistenceMock = createPersistenceMockWithData();
-        CurrenciesByDateMapper mapperMock = createMapperMock();
-
-        CurrencyExchangeService service = new CurrencyExchangeService(providerMock, persistenceMock, mapperMock);
+        CurrencyExchangeService service = new CurrencyExchangeService(providerMockWithData, persistenceMockWithData, mapperMock);
 
         verifyResponse(service.jsonResponse(localDate, RUB_CODE));
 
-        verify(persistenceMock).get(eq(localDate));
-        verify(persistenceMock, never()).save(any());
-        verify(providerMock, never()).load(any());
+        verify(persistenceMockWithData).get(eq(localDate));
+        verify(persistenceMockWithData, never()).save(any());
+        verify(providerMockWithData, never()).load(any());
         verify(mapperMock).getCurrencies(eq(currenciesByDate), eq(RUB_CODE));
     }
 
     @Test
     void jsonResponseNoDataFromDb() {
-        CbrExchangeRateProvider providerMock = createProviderMockWithData();
-        CurrenciesByDatePersistence persistenceMock = createPersistenceMockWithoutData();
-        CurrenciesByDateMapper mapperMock = createMapperMock();
-
-        CurrencyExchangeService service = new CurrencyExchangeService(providerMock, persistenceMock, mapperMock);
+        CurrencyExchangeService service = new CurrencyExchangeService(providerMockWithData, persistenceMockWithoutData, mapperMock);
 
         verifyResponse(service.jsonResponse(localDate, RUB_CODE));
 
-        verify(persistenceMock).get(eq(localDate));
-        verify(persistenceMock).save(eq(currenciesByDate));
-        verify(providerMock).load(eq(localDate));
+        verify(persistenceMockWithoutData).get(eq(localDate));
+        verify(persistenceMockWithoutData).save(eq(currenciesByDate));
+        verify(providerMockWithData).load(eq(localDate));
         verify(mapperMock).getCurrencies(eq(currenciesByDate), eq(RUB_CODE));
     }
 
     @Test
     void jsonResponseNoDataFromDbAndNoDataFromProvider() {
-        CbrExchangeRateProvider providerMock = createProviderMockWithoutData();
-        CurrenciesByDatePersistence persistenceMock = createPersistenceMockWithoutData();
-        CurrenciesByDateMapper mapperMock = createMapperMock();
-
-        CurrencyExchangeService service = new CurrencyExchangeService(providerMock, persistenceMock, mapperMock);
+        CurrencyExchangeService service = new CurrencyExchangeService(providerMockWithoutData, persistenceMockWithoutData, mapperMock);
         service.jsonResponse(localDate, RUB_CODE);
 
-        verify(persistenceMock).get(eq(localDate));
-        verify(persistenceMock, never()).save(any());
-        verify(providerMock).load(eq(localDate));
+        verify(persistenceMockWithoutData).get(eq(localDate));
+        verify(persistenceMockWithoutData, never()).save(any());
+        verify(providerMockWithoutData).load(eq(localDate));
         verify(mapperMock, never()).getCurrencies(any(), any());
     }
 
@@ -92,31 +102,31 @@ class CurrencyExchangeServiceTest {
         assertEquals(EUR_RATE, responseData.getRates().get(EUR_CODE));
     }
 
-    private CbrExchangeRateProvider createProviderMockWithData() {
+    private static CbrExchangeRateProvider createProviderMockWithData() {
         CbrExchangeRateProvider providerMock = mock(CbrExchangeRateProvider.class);
         when(providerMock.load(eq(localDate))).thenReturn(Optional.of(currenciesByDate));
         return providerMock;
     }
 
-    private CbrExchangeRateProvider createProviderMockWithoutData() {
+    private static CbrExchangeRateProvider createProviderMockWithoutData() {
         CbrExchangeRateProvider providerMock = mock(CbrExchangeRateProvider.class);
         when(providerMock.load(any())).thenReturn(Optional.empty());
         return providerMock;
     }
 
-    private CurrenciesByDatePersistence createPersistenceMockWithData() {
+    private static CurrenciesByDatePersistence createPersistenceMockWithData() {
         CurrenciesByDatePersistence persistenceMock = mock(CurrenciesByDatePersistence.class);
         when(persistenceMock.get(eq(localDate))).thenReturn(Optional.of(currenciesByDate));
         return persistenceMock;
     }
 
-    private CurrenciesByDatePersistence createPersistenceMockWithoutData() {
+    private static CurrenciesByDatePersistence createPersistenceMockWithoutData() {
         CurrenciesByDatePersistence persistenceMock = mock(CurrenciesByDatePersistence.class);
         when(persistenceMock.get(any())).thenReturn(Optional.empty());
         return persistenceMock;
     }
 
-    private CurrenciesByDateMapper createMapperMock() {
+    private static CurrenciesByDateMapper createMapperMock() {
         CurrenciesByDateMapper mapperMock = mock(CurrenciesByDateMapper.class);
         when(mapperMock.getCurrencies(same(currenciesByDate), eq(RUB_CODE)))
                 .thenReturn(Map.of(USD_CODE, USD_RATE, EUR_CODE, EUR_RATE));
