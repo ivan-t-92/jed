@@ -3,6 +3,7 @@ package servlet.exchange.mapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import servlet.exchange.entity.CurrenciesByDateEntity;
 import servlet.exchange.entity.CurrencyEntity;
@@ -25,6 +26,9 @@ public class CurrenciesByDateMapperTest {
 
     private static CurrenciesByDateEntity currenciesByDate;
 
+    @InjectMocks
+    private CurrenciesByDateMapper mapper;
+
     @BeforeAll
     static void init() {
         List<CurrencyEntity> currencies = new ArrayList<>();
@@ -35,13 +39,13 @@ public class CurrenciesByDateMapperTest {
 
     @Test
     public void getCurrenciesRubBase() {
-        Map<String, Double> currencies =  new CurrenciesByDateMapper().getCurrencies(currenciesByDate, RUB_CODE);
+        Map<String, Double> currencies = mapper.getCurrencies(currenciesByDate, RUB_CODE);
         verifyRubBase(currencies);
     }
 
     @Test
     public void getCurrenciesEmptyBase() {
-        Map<String, Double> currencies =  new CurrenciesByDateMapper().getCurrencies(currenciesByDate, "");
+        Map<String, Double> currencies = mapper.getCurrencies(currenciesByDate, "");
         verifyRubBase(currencies);
     }
 
@@ -53,7 +57,7 @@ public class CurrenciesByDateMapperTest {
 
     @Test
     public void getCurrenciesUsdBase() {
-        Map<String, Double> currencies =  new CurrenciesByDateMapper().getCurrencies(currenciesByDate, USD_CODE);
+        Map<String, Double> currencies = mapper.getCurrencies(currenciesByDate, USD_CODE);
 
         assertEquals(2, currencies.size());
         assertEquals(USD_RATE, currencies.get(RUB_CODE));
@@ -62,7 +66,7 @@ public class CurrenciesByDateMapperTest {
 
     @Test
     public void getCurrenciesEurBase() {
-        Map<String, Double> currencies =  new CurrenciesByDateMapper().getCurrencies(currenciesByDate, EUR_CODE);
+        Map<String, Double> currencies = mapper.getCurrencies(currenciesByDate, EUR_CODE);
 
         assertEquals(2, currencies.size());
         assertEquals(EUR_RATE, currencies.get(RUB_CODE));
