@@ -13,7 +13,7 @@
         <tomcat.version>8.5.64</tomcat.version>
         <jackson.version>2.12.2</jackson.version>
         <lombok.version>1.18.20</lombok.version>
-        <h2.version>1.4.200</h2.version>
+        <h2.version>2.1.210</h2.version>
         <hibernate.version>5.4.31.Final</hibernate.version>
         <junit.version>5.8.0-M1</junit.version>
         <mockito.version>3.11.1</mockito.version>
